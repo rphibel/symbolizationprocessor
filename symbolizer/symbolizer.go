@@ -1,7 +1,6 @@
 package symbolizer
 
-// #cgo CFLAGS: -I/home/fedora/src/blazesym/capi/include
-// #cgo LDFLAGS: -L/home/fedora/src/blazesym/target/debug -l:libblazesym_c.a
+// #cgo LDFLAGS: -l:libblazesym_c.a
 /*
 #include "blazesym.h"
 struct blaze_sym* get_result(blaze_syms* res, size_t pos) {
