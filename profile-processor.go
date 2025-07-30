@@ -78,10 +78,14 @@ func (symbolizationprocessorProc *symbolizationProcessor) ConsumeProfiles(ctx co
 					)
 					pid := profileutils.GetPid(sample, attributeTable)
 
+					if pid == -1 {
+						continue // Skip if PID is not found
+					}
+
 					for sampleLocationIdx := 0; sampleLocationIdx < int(sample.LocationsLength()); sampleLocationIdx++ {
 						locationIdx := locationIndices.At(int(sample.LocationsStartIndex()) + sampleLocationIdx)
 						location := locationTable.At(int(locationIdx))
-						if location.Line().Len() == 0 && pid != -1 {
+						if location.Line().Len() == 0 {
 							address := location.Address()
 							symbol, err := symbolizer.Symbolize(pid, address)
 							if err != nil {
