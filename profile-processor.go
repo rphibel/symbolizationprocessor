@@ -70,12 +70,8 @@ func (symbolizationprocessorProc *symbolizationProcessor) ConsumeProfiles(ctx co
 	for _, resourceProfile := range td.ResourceProfiles().All() {
 		for _, scopeProfile := range resourceProfile.ScopeProfiles().All() {
 			for _, profile := range scopeProfile.Profiles().All() {
-				symbolizationprocessorProc.logger.Info("Processing profile", zap.String("profile", profile.ProfileID().String()))
 				locationIndices := profile.LocationIndices()
 				for _, sample := range profile.Sample().All() {
-					symbolizationprocessorProc.logger.Info(
-						"Processing sample",
-					)
 					pid := profileutils.GetPid(sample, attributeTable)
 
 					if pid == -1 {
