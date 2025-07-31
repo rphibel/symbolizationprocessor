@@ -13,7 +13,7 @@ import (
 	"unsafe"
 )
 
-type symbolizer struct {
+type Symbolizer struct {
 	sym *C.blaze_symbolizer
 }
 
@@ -29,21 +29,21 @@ type Symbol struct {
 	Module     string
 	CodeInfo   CodeInfo
 }
-// NewSymbolizer creates a new symbolizer instance.
-func NewSymbolizer() *symbolizer {
-	return &symbolizer{
+// NewSymbolizer creates a new Symbolizer instance.
+func NewSymbolizer() *Symbolizer {
+	return &Symbolizer{
 		sym: C.blaze_symbolizer_new(),
 	}
 }
 
-func (s *symbolizer) Free() {
+func (s *Symbolizer) Free() {
 	if s.sym != nil {
 		C.blaze_symbolizer_free(s.sym)
 		s.sym = nil
 	}
 }	
 
-func (s *symbolizer) Symbolize(ipid int, iaddr uint64) (*Symbol, error) {
+func (s *Symbolizer) Symbolize(ipid int, iaddr uint64) (*Symbol, error) {
 	pid := C.uint32_t(ipid)
 	addr := C.uint64_t(iaddr)
 	stack := C.malloc(C.sizeof_uint64_t * 1)

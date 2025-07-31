@@ -20,28 +20,15 @@ type symbolizationProcessor struct {
 	logger       *zap.Logger
 	nextConsumer xconsumer.Profiles
 	config       *Config
+	symbolizer   *symbolizer.Symbolizer
 }
 
 func (symbolizationprocessorProc *symbolizationProcessor) Start(ctx context.Context, host component.Host) error {
 	symbolizationprocessorProc.host = host
+	symbolizationprocessorProc.symbolizer = symbolizer.NewSymbolizer()
 	ctx = context.Background()
-	ctx, symbolizationprocessorProc.cancel = context.WithCancel(ctx)
-
-	/*interval, _ := time.ParseDuration(symbolizationprocessorProc.config.Interval)
-	go func() {
-		ticker := time.NewTicker(interval)
-		defer ticker.Stop()
-
-		for {
-			select {
-				case <-ticker.C:
-					symbolizationprocessorProc.logger.Info("I should start processing profiles now!")
-				case <-ctx.Done():
-					return
-			}
-		}
-	}()*/
-
+	_, symbolizationprocessorProc.cancel = context.WithCancel(ctx)
+	
 	return nil
 
 }
@@ -50,6 +37,7 @@ func (symbolizationprocessorProc *symbolizationProcessor) Shutdown(ctx context.C
 	if symbolizationprocessorProc.cancel != nil {
 		symbolizationprocessorProc.cancel()
 	}
+	symbolizationprocessorProc.symbolizer.Free()
 	return nil
 }
 
@@ -65,8 +53,6 @@ func (symbolizationprocessorProc *symbolizationProcessor) ConsumeProfiles(ctx co
 	functionTable := profilesDict.FunctionTable()
 	stringTable := profilesDict.StringTable()
 	symbolAdder := profileutils.NewSymbolAdder(stringTable, functionTable, attributeTable)
-	symbolizer := symbolizer.NewSymbolizer()
-	defer symbolizer.Free()
 	for _, resourceProfile := range td.ResourceProfiles().All() {
 		for _, scopeProfile := range resourceProfile.ScopeProfiles().All() {
 			for _, profile := range scopeProfile.Profiles().All() {
@@ -83,7 +69,7 @@ func (symbolizationprocessorProc *symbolizationProcessor) ConsumeProfiles(ctx co
 						location := locationTable.At(int(locationIdx))
 						if location.Line().Len() == 0 {
 							address := location.Address()
-							symbol, err := symbolizer.Symbolize(pid, address)
+							symbol, err := symbolizationprocessorProc.symbolizer.Symbolize(pid, address)
 							if err != nil {
 								symbolizationprocessorProc.logger.Error(
 									"Failed to symbolize address",
