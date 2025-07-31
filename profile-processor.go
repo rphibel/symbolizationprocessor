@@ -16,7 +16,6 @@ import (
 
 type symbolizationProcessor struct {
 	host         component.Host
-	cancel       context.CancelFunc
 	logger       *zap.Logger
 	nextConsumer xconsumer.Profiles
 	config       *Config
@@ -26,17 +25,12 @@ type symbolizationProcessor struct {
 func (symbolizationprocessorProc *symbolizationProcessor) Start(ctx context.Context, host component.Host) error {
 	symbolizationprocessorProc.host = host
 	symbolizationprocessorProc.symbolizer = symbolizer.NewSymbolizer()
-	ctx = context.Background()
-	_, symbolizationprocessorProc.cancel = context.WithCancel(ctx)
 	
 	return nil
 
 }
 
 func (symbolizationprocessorProc *symbolizationProcessor) Shutdown(ctx context.Context) error {
-	if symbolizationprocessorProc.cancel != nil {
-		symbolizationprocessorProc.cancel()
-	}
 	symbolizationprocessorProc.symbolizer.Free()
 	return nil
 }
