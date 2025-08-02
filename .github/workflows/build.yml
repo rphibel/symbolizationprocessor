@@ -7,6 +7,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+      - name: Install blazesym-c
+        run: ./install_blazesym.sh
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
