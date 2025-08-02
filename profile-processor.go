@@ -10,8 +10,8 @@ import (
 	"go.opentelemetry.io/collector/pdata/pprofile"
 	"go.uber.org/zap"
 
-	"github.com/open-telemetry/opentelemetry-collector-contrib/processor/symbolizationprocessor/profileutils"
-	"github.com/open-telemetry/opentelemetry-collector-contrib/processor/symbolizationprocessor/symbolizer"
+	"github.com/rphibel/symbolizationprocessor/profileutils"
+	"github.com/rphibel/symbolizationprocessor/symbolizer"
 )
 
 type symbolizationProcessor struct {
