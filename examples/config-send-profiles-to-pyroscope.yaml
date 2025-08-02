@@ -1,0 +1,22 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: "0.0.0.0:4318"
+exporters:
+  debug:
+  otlp:
+    endpoint: "http://localhost:4040"
+    tls:
+      insecure: true
+
+processors:
+  symbolizationprocessor:
+
+service:
+  pipelines:
+    profiles:
+      receivers: [otlp]
+      processors: [symbolizationprocessor]
+      exporters: [otlp]
+
